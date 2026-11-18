@@ -1,0 +1,90 @@
+
+name: 01 - Java Build and Unit Tests
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+  pull_request:
+    branches:
+      - main
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and Test Java Application
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout source code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Verify Maven project structure
+      - name: Verify Project Structure
+        shell: bash
+        run: |
+          echo "Checking Maven project structure..."
+
+          required_files=(
+            "pom.xml"
+            "src/main/java/com/example/App.java"
+            "src/test/java/com/example/AppTest.java"
+          )
+
+          required_directories=(
+            "src/main/java/com/example"
+            "src/test/java/com/example"
+          )
+
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "ERROR: Required file missing: $file"
+              exit 1
+            fi
+            echo "Found file: $file"
+          done
+
+          for directory in "${required_directories[@]}"; do
+            if [ ! -d "$directory" ]; then
+              echo "ERROR: Required directory missing: $directory"
+              exit 1
+            fi
+            echo "Found directory: $directory"
+          done
+
+          echo "Project structure verification successful!"
+
+      # Step 3: Configure Java 17 and Maven caching
+      - name: Set Up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      # Step 4: Compile Java application
+      - name: Compile Application
+        run: mvn clean compile
+
+      # Step 5: Execute JUnit tests
+      - name: Run Unit Tests
+        run: mvn test
+
+      # Step 6: Package application into JAR
+      - name: Package Application
+        run: mvn package
+
+      # Step 7: Upload generated JAR artifact
+      - name: Upload JAR Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-app-jar
+          path: target/*.jar
+          if-no-files-found: error
+          retention-days: 7
