@@ -33,7 +33,6 @@ jobs:
           server-id: github
           server-username: GITHUB_ACTOR
           server-password: GITHUB_TOKEN
-          settings-path: ${{ github.workspace }}
 
       - name: Publish Maven package to GitHub Packages
         run: mvn -B deploy -DskipTests
