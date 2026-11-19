@@ -58,13 +58,13 @@ jobs:
         run: |
           scp -i ~/.ssh/deploy_key \
             java-cicd-app-1.0.0.jar \
-            ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/tmp/java-ciccd-app-1.0.0.jar
+            ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/tmp/java-cicd-app-1.0.0.jar
 
           ssh -i ~/.ssh/deploy_key \
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
               sudo systemctl stop java-app || true
-              sudo mv /tmp/java-cicd-app-1.0.0.jar /opt/java-app/java-ciccd-app-1.0.0.jar
-              sudo chown ubuntu:ubuntu /opt/java-app/java-ciccd-app-1.0.0.jar
+              sudo mv /tmp/java-cicd-app-1.0.0.jar /opt/java-app/java-cicd-app-1.0.0.jar
+              sudo chown ubuntu:ubuntu /opt/java-app/java-cicd-app-1.0.0.jar
               sudo systemctl start java-app
               sudo systemctl status java-app --no-pager
           EOF
